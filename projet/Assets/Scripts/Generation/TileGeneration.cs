@@ -19,7 +19,8 @@ public class TileGeneration : MonoBehaviour
     Mesh planeMesh;
     [SerializeField]
     Material planeMaterial;
-
+    [SerializeField]
+    Material planeSecondMaterial;
     EntityManager entityManager;
     int entityCount;
     // Start is called before the first frame update
@@ -36,12 +37,12 @@ public class TileGeneration : MonoBehaviour
         {
             for (int y = 0; y < ySize; y++)
             {
-               float3 position = new float3(0f,x*spacing, y*spacing);
+               float3 position = new float3(x*spacing,0f,y*spacing);
 
                quaternion rotation = quaternion.Euler(
                    0f*Mathf.Deg2Rad,
-                   5f * y*Mathf.Deg2Rad,
-                   5f* x * Mathf.Deg2Rad
+                    0f*Mathf.Deg2Rad,
+                   0f* Mathf.Deg2Rad
                ); 
                 CreateEntitie(position, rotation);
                 entityCount++;
@@ -50,6 +51,9 @@ public class TileGeneration : MonoBehaviour
     }
     void CreateEntitie(float3 position,quaternion rotation){
         Entity entity = entityManager.CreateEntity();
+        int couleurRandom= UnityEngine.Random.Range(0, 2);
+
+        Material randomMat = couleurRandom == 0 ? planeMaterial : planeSecondMaterial;
 
         //Donne un nom a l'entiter generer
         entityManager.SetName(entity,"Entiter Spawn " + entityCount);
@@ -59,18 +63,16 @@ public class TileGeneration : MonoBehaviour
 
         //Change la rotation de l'objet
         entityManager.AddComponentData(entity,new Rotation{Value= rotation});
+
         //Ajout du visuel a l'entité
         entityManager.AddSharedComponentData(entity,new RenderMesh{
             mesh = planeMesh,
-            material = planeMaterial
+            material = randomMat
         });
+        entityManager.AddComponentData(entity, new RenderBounds { Value = planeMesh.bounds.ToAABB() });
+
         //Rend l'objet relatif a la scene.
         entityManager.AddComponentData(entity,new LocalToWorld{});
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
