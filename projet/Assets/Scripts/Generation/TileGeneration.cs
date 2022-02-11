@@ -31,8 +31,8 @@ public class TileGeneration : MonoBehaviour
     float[,] perlinNoseGenerationForTree;
     // Start is called before the first frame update
     void Start()
-    {
-
+    {   //Seed Generer aleatoirement 
+        seed = UnityEngine.Random.Range(0, 300);
         noiseGenerator = new PerlinNoiseGenerator();
         noiseGenerator.pixWidth = xSize;
         noiseGenerator.pixHeight = ySize;
