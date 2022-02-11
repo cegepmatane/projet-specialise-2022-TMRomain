@@ -19,11 +19,14 @@ public class TileGeneration : MonoBehaviour
     [SerializeField]
     Mesh planeMesh;
     [SerializeField]
+    GameObject treePrefab;
+    [SerializeField]
     Material[] planeMaterial;
     EntityManager entityManager;
     int entityCount;
 
     float[,] perlinNoseGeneration ;
+    float[,] perlinNoseGenerationForTree;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +34,7 @@ public class TileGeneration : MonoBehaviour
         noiseGenerator.pixWidth = xSize;
         noiseGenerator.pixHeight = ySize;
         perlinNoseGeneration = noiseGenerator.CalcNoise();
+        perlinNoseGenerationForTree = noiseGenerator.CalcNoise();
         entityCount = 0;
         GenerateTerrain();
     }
@@ -49,19 +53,23 @@ public class TileGeneration : MonoBehaviour
                     0f*Mathf.Deg2Rad,
                    0f* Mathf.Deg2Rad
                ); 
-                Material randomMat = planeMaterial[RandomColor(x,y)];
+               int matType = RandomColor(x,y);
+                Material randomMat = planeMaterial[matType];
+                bool genererArbre = spawnArbre(matType,x,y);
 
-                CreateEntitie(position, rotation,randomMat);
+                CreateEntitie(position, rotation,randomMat,genererArbre);
                 entityCount++;
             }
         }
     }
-    void CreateEntitie(float3 position,quaternion rotation, Material planeColor){
+    void CreateEntitie(float3 position,quaternion rotation, Material planeColor,bool genererArbre){
         Entity entity = entityManager.CreateEntity();
 
-
+        if(genererArbre){
+             Instantiate(treePrefab, new Vector3(position.x, position.y, position.z), Quaternion.identity);
+        }
         //Donne un nom a l'entiter generer
-        entityManager.SetName(entity,"Entiter Spawn " + entityCount);
+        entityManager.SetName(entity,"Case " + entityCount);
 
         //Change la position de l'entité
         entityManager.AddComponentData(entity,new Translation{Value = position});
@@ -78,16 +86,24 @@ public class TileGeneration : MonoBehaviour
 
         //Rend l'objet relatif a la scene.
         entityManager.AddComponentData(entity,new LocalToWorld{});
+        
     }
     int RandomColor(int  x, int y){
         float positionNoise = perlinNoseGeneration[x,y];
-        Debug.Log(positionNoise);
         if(positionNoise< 0.3){
             return 1;
         }else if(positionNoise< 0.34){
             return 2;
         }else{
             return 0;
+        }
+    }
+    bool spawnArbre(int type,int  x, int y){
+        float positionNoise = perlinNoseGeneration[x,y];
+        if(positionNoise< 0.3){
+            return true;
+        }else{
+            return false;
         }
     }
 }
