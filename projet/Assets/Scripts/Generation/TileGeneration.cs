@@ -22,6 +22,8 @@ public class TileGeneration : MonoBehaviour
     GameObject treePrefab;
     [SerializeField]
     Material[] planeMaterial;
+    [SerializeField]
+    int seed;
     EntityManager entityManager;
     int entityCount;
 
@@ -30,11 +32,12 @@ public class TileGeneration : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         noiseGenerator = new PerlinNoiseGenerator();
         noiseGenerator.pixWidth = xSize;
         noiseGenerator.pixHeight = ySize;
-        perlinNoseGeneration = noiseGenerator.CalcNoise();
-        perlinNoseGenerationForTree = noiseGenerator.CalcNoise();
+        perlinNoseGeneration = noiseGenerator.CalcNoise(seed);
+        perlinNoseGenerationForTree = noiseGenerator.CalcNoise(seed*15);
         entityCount = 0;
         GenerateTerrain();
     }
@@ -66,7 +69,12 @@ public class TileGeneration : MonoBehaviour
         Entity entity = entityManager.CreateEntity();
 
         if(genererArbre){
-             Instantiate(treePrefab, new Vector3(position.x, position.y, position.z), Quaternion.identity);
+            //Generation de l'arbre 
+            GameObject arbre = Instantiate(treePrefab, new Vector3(position.x, position.y, position.z), Quaternion.identity);
+            //Application de la taille aleatoire
+            int randomScale = UnityEngine.Random.Range(15, 30);
+            Vector3 randomSize = new Vector3 (randomScale,randomScale,randomScale);
+            arbre.transform.localScale = randomSize;
         }
         //Donne un nom a l'entiter generer
         entityManager.SetName(entity,"Case " + entityCount);
@@ -99,9 +107,13 @@ public class TileGeneration : MonoBehaviour
         }
     }
     bool spawnArbre(int type,int  x, int y){
-        float positionNoise = perlinNoseGeneration[x,y];
-        if(positionNoise< 0.3){
-            return true;
+        float positionNoise = perlinNoseGenerationForTree[x,y];
+        if(positionNoise< 0.36){
+            if(type == 0){
+                return true;
+            }else{
+                return false;
+            }
         }else{
             return false;
         }

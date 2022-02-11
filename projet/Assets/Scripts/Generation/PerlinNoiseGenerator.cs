@@ -16,7 +16,7 @@ public class PerlinNoiseGenerator : MonoBehaviour
         // CalcNoise();
     }
     //Genere le Noise
-    public float[,] CalcNoise()
+    public float[,] CalcNoise(int seed)
     {
         //Initialisation de l'array 
         perlinArray = new float[pixWidth,pixHeight];
@@ -29,8 +29,8 @@ public class PerlinNoiseGenerator : MonoBehaviour
             while (x < pixWidth)
             {
                 //Generer en fonction de la taille maximum et de la ou nous somme dans l'array 
-                float xCoord =  x / pixWidth * scale;
-                float yCoord =  y / pixHeight * scale;
+                float xCoord =  seed  + x / pixWidth * scale;
+                float yCoord =  seed  + y / pixHeight * scale;
                 float sample = Mathf.PerlinNoise(xCoord, yCoord);
                 perlinArray[(int)x,(int)y] = sample;
                 // Debug.Log(perlinArray[(int)x,(int)y]);
