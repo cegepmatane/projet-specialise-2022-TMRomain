@@ -7,7 +7,7 @@ public class PerlinNoiseGenerator : MonoBehaviour
     // Hauteur et largeur de la generation Perlin
     public int pixWidth = 100;
     public int pixHeight = 100;
-    public float scale = 1.0F;
+    public float scale = 10F;
     //Array qui contien les valeur du Noise Generer
     private float[,] perlinArray;
 

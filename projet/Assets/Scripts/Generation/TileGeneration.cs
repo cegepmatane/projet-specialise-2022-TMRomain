@@ -81,12 +81,13 @@ public class TileGeneration : MonoBehaviour
     }
     int RandomColor(int  x, int y){
         float positionNoise = perlinNoseGeneration[x,y];
-        if(positionNoise< 0.4){
-            return 0;
-        }else if(positionNoise< 0.6){
+        Debug.Log(positionNoise);
+        if(positionNoise< 0.3){
             return 1;
-        }else{
+        }else if(positionNoise< 0.34){
             return 2;
+        }else{
+            return 0;
         }
     }
 }
