@@ -10,6 +10,9 @@ public class TileGeneration : MonoBehaviour
 {
     [SerializeField]
     PerlinNoiseGenerator noiseGenerator;
+    //Variable temporaraire pour la generation des arbre
+    [SerializeField]
+    bool faireSpawnArbre = true;
     [SerializeField]
     int xSize;
     [SerializeField]
@@ -37,7 +40,9 @@ public class TileGeneration : MonoBehaviour
         noiseGenerator.pixWidth = xSize;
         noiseGenerator.pixHeight = ySize;
         perlinNoseGeneration = noiseGenerator.CalcNoise(seed);
-        perlinNoseGenerationForTree = noiseGenerator.CalcNoise(seed*15);
+        if(faireSpawnArbre){
+            perlinNoseGenerationForTree = noiseGenerator.CalcNoise(seed*15);
+        }
         entityCount = 0;
         GenerateTerrain();
     }
@@ -58,7 +63,10 @@ public class TileGeneration : MonoBehaviour
                ); 
                int matType = RandomColor(x,y);
                 Material randomMat = planeMaterial[matType];
-                bool genererArbre = spawnArbre(matType,x,y);
+                bool genererArbre = false;
+                if(faireSpawnArbre){
+                    genererArbre = spawnArbre(matType,x,y);
+                }
 
                 CreateEntitie(position, rotation,randomMat,genererArbre);
                 entityCount++;

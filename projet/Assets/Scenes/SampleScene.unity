@@ -408,8 +408,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: -0.14308202, y: -0.8489142, z: 0.29107007, w: -0.41731343}
-  m_LocalPosition: {x: 305.40955, y: 431.25427, z: 1007.2286}
+  m_LocalRotation: {x: 0.07047642, y: 0.90235776, z: -0.16169086, w: 0.39324233}
+  m_LocalPosition: {x: 494.03897, y: 108.022835, z: 1244.212}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 2042745466}
   - component: {fileID: 2042745465}
   m_Layer: 0
-  m_Name: Test
+  m_Name: MapGeneration
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -445,12 +445,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   noiseGenerator: {fileID: 0}
-  xSize: 10
-  ySize: 10
+  faireSpawnArbre: 1
+  xSize: 200
+  ySize: 200
   spacing: 10
   planeMesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
-  planeMaterial: {fileID: 2100000, guid: 7b7e11eaeaa27b24e97663c5666a5195, type: 2}
-  planeSecondMaterial: {fileID: 2100000, guid: d9b94f62d75288f4f8ae3289d6604189, type: 2}
+  treePrefab: {fileID: 1904624167801495183, guid: 34fe87592c32c934f81c71c545310d31, type: 3}
+  planeMaterial:
+  - {fileID: 2100000, guid: d9b94f62d75288f4f8ae3289d6604189, type: 2}
+  - {fileID: 2100000, guid: 7b7e11eaeaa27b24e97663c5666a5195, type: 2}
+  - {fileID: 2100000, guid: 43710be97fde22d4f800815ecc7f3ef6, type: 2}
+  seed: 15
 --- !u!4 &2042745466
 Transform:
   m_ObjectHideFlags: 0
