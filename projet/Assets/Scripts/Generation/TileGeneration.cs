@@ -19,9 +19,7 @@ public class TileGeneration : MonoBehaviour
     [SerializeField]
     Mesh planeMesh;
     [SerializeField]
-    Material planeMaterial;
-    [SerializeField]
-    Material planeSecondMaterial;
+    Material[] planeMaterial;
     EntityManager entityManager;
     int entityCount;
 
@@ -51,16 +49,16 @@ public class TileGeneration : MonoBehaviour
                     0f*Mathf.Deg2Rad,
                    0f* Mathf.Deg2Rad
                ); 
-                CreateEntitie(position, rotation);
+                Material randomMat = planeMaterial[RandomColor(x,y)];
+
+                CreateEntitie(position, rotation,randomMat);
                 entityCount++;
             }
         }
     }
-    void CreateEntitie(float3 position,quaternion rotation){
+    void CreateEntitie(float3 position,quaternion rotation, Material planeColor){
         Entity entity = entityManager.CreateEntity();
-        int couleurRandom= UnityEngine.Random.Range(0, 2);
 
-        Material randomMat = couleurRandom == 0 ? planeMaterial : planeSecondMaterial;
 
         //Donne un nom a l'entiter generer
         entityManager.SetName(entity,"Entiter Spawn " + entityCount);
@@ -74,12 +72,21 @@ public class TileGeneration : MonoBehaviour
         //Ajout du visuel a l'entité
         entityManager.AddSharedComponentData(entity,new RenderMesh{
             mesh = planeMesh,
-            material = randomMat
+            material = planeColor
         });
         entityManager.AddComponentData(entity, new RenderBounds { Value = planeMesh.bounds.ToAABB() });
 
         //Rend l'objet relatif a la scene.
         entityManager.AddComponentData(entity,new LocalToWorld{});
     }
-
+    int RandomColor(int  x, int y){
+        float positionNoise = perlinNoseGeneration[x,y];
+        if(positionNoise< 0.4){
+            return 0;
+        }else if(positionNoise< 0.6){
+            return 1;
+        }else{
+            return 2;
+        }
+    }
 }
