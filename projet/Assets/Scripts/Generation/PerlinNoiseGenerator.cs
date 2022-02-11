@@ -11,12 +11,9 @@ public class PerlinNoiseGenerator : MonoBehaviour
     //Array qui contien les valeur du Noise Generer
     private float[,] perlinArray;
 
-    
-
     void Start()
     {
         // CalcNoise();
-
     }
     //Genere le Noise
     public float[,] CalcNoise()
