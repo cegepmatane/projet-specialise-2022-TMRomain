@@ -8,7 +8,8 @@ using Unity.Mathematics;
 
 public class TileGeneration : MonoBehaviour
 {
-
+    [SerializeField]
+    PerlinNoiseGenerator noiseGenerator;
     [SerializeField]
     int xSize;
     [SerializeField]
@@ -23,9 +24,15 @@ public class TileGeneration : MonoBehaviour
     Material planeSecondMaterial;
     EntityManager entityManager;
     int entityCount;
+
+    float[,] perlinNoseGeneration ;
     // Start is called before the first frame update
     void Start()
     {
+        noiseGenerator = new PerlinNoiseGenerator();
+        noiseGenerator.pixWidth = xSize;
+        noiseGenerator.pixHeight = ySize;
+        perlinNoseGeneration = noiseGenerator.CalcNoise();
         entityCount = 0;
         GenerateTerrain();
     }

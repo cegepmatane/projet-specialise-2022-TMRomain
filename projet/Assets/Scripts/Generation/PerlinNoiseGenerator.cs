@@ -15,11 +15,11 @@ public class PerlinNoiseGenerator : MonoBehaviour
 
     void Start()
     {
-        CalcNoise();
+        // CalcNoise();
 
     }
     //Genere le Noise
-    void CalcNoise()
+    public float[,] CalcNoise()
     {
         //Initialisation de l'array 
         perlinArray = new float[pixWidth,pixHeight];
@@ -41,6 +41,7 @@ public class PerlinNoiseGenerator : MonoBehaviour
             }
             y++;
         }
+        return perlinArray;
     }
 
 }
