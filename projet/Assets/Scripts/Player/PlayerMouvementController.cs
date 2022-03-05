@@ -6,6 +6,7 @@ public class PlayerMouvementController : MonoBehaviour
     [HideInInspector]
     public float MovementSpeed =1;
     private float Gravity = 9.8f;
+    private bool asGravity = false;
     private float velocity = 0;
     private Camera cam;
     
@@ -23,15 +24,15 @@ public class PlayerMouvementController : MonoBehaviour
         characterController.Move((cam.transform.right * horizontal + cam.transform.forward * vertical) * Time.deltaTime);
  
         // Gravity
-        if(characterController.isGrounded)
-        {
-            velocity = 0;
-        }
-        else
-        {
-            velocity -= Gravity * Time.deltaTime;
-            characterController.Move(new Vector3(0, velocity, 0));
-        }
+        // if(characterController.isGrounded && asGravity)
+        // {
+        //     velocity = 0;
+        // }
+        // else
+        // {
+        //     velocity -= Gravity * Time.deltaTime;
+        //     characterController.Move(new Vector3(0, velocity, 0));
+        // }
     }
 }
  
