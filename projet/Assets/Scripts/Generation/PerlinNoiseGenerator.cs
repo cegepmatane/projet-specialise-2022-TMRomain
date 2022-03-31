@@ -15,7 +15,7 @@ public class PerlinNoiseGenerator : MonoBehaviour
     {
         // CalcNoise();
     }
-    //Genere le Noise
+    //Genere le Noise   
     public float[,] CalcNoise(int seed)
     {
         //Initialisation de l'array 

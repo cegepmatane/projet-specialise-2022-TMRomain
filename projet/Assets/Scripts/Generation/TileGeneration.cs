@@ -34,14 +34,15 @@ public class TileGeneration : MonoBehaviour
     public float3 mapOffset;
     EntityManager entityManager;
     int entityCount;
-
+    public bool isTileEnabled = false;
+    private List<Entity> allTileEntities = new List<Entity>();
     float[,] perlinNoseGeneration ;
     float[,] perlinNoseGenerationForTree;
     // Start is called before the first frame update
-    void Start(){
+    // void Start(){
 
-        StartGeneration();
-    }
+    //     StartGeneration();
+    // }
     public void StartGeneration()
     {   
         //Recupere les valeur pour la generation des entiter arbre 
@@ -50,7 +51,7 @@ public class TileGeneration : MonoBehaviour
         treeMaterial = arbreTransform.GetComponent<Renderer>().sharedMaterial;
         //Seed Generer aleatoirement 
         seed = UnityEngine.Random.Range(0, 300);
-        noiseGenerator = new PerlinNoiseGenerator();
+        noiseGenerator = gameObject.AddComponent(typeof(PerlinNoiseGenerator)) as PerlinNoiseGenerator;
         noiseGenerator.pixWidth = xSize;
         noiseGenerator.pixHeight = ySize;
         perlinNoseGeneration = noiseGenerator.CalcNoise(seed);
@@ -86,6 +87,7 @@ public class TileGeneration : MonoBehaviour
                 entityCount++;
             }
         }
+        tileRenderLogic();
     }
     void CreateEntitie(float3 position,quaternion rotation, Material planeColor,bool genererArbre){
         Entity entity = entityManager.CreateEntity();
@@ -102,6 +104,8 @@ public class TileGeneration : MonoBehaviour
                         material = treeMaterial
                     });
             entityManager.AddComponentData(entityArbre, new RenderBounds { Value = treeMesh.bounds.ToAABB() });
+            allTileEntities.Add(entityArbre);
+
 
 
             int randomScale = UnityEngine.Random.Range(15, 30);
@@ -138,6 +142,7 @@ public class TileGeneration : MonoBehaviour
 
         //Rend l'objet relatif a la scene.
         entityManager.AddComponentData(entity,new LocalToWorld{});
+        allTileEntities.Add(entity);
         
     }
     int RandomColor(int  x, int y){
@@ -160,6 +165,19 @@ public class TileGeneration : MonoBehaviour
             }
         }else{
             return false;
+        }
+    }
+    void tileRenderLogic(){
+        if(!isTileEnabled){
+            foreach (Entity entity in allTileEntities)
+            {
+                entityManager.AddComponentData(entity,new Disabled{});
+            }
+        }else{
+            foreach (Entity entity in allTileEntities)
+            {
+                entityManager.RemoveComponent(entity,typeof(Disabled));
+            }
         }
     }
 }
