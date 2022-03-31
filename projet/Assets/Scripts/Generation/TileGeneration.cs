@@ -167,7 +167,7 @@ public class TileGeneration : MonoBehaviour
             return false;
         }
     }
-    void tileRenderLogic(){
+    public void tileRenderLogic(){
         if(!isTileEnabled){
             foreach (Entity entity in allTileEntities)
             {
