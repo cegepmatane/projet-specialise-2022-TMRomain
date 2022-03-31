@@ -14,9 +14,9 @@ public class TileGeneration : MonoBehaviour
     [SerializeField]
     bool faireSpawnArbre = true;
     [SerializeField]
-    int xSize;
+    public int xSize;
     [SerializeField]
-    int ySize;
+    public int ySize;
     [SerializeField]
     float spacing;
     [SerializeField]
@@ -28,14 +28,14 @@ public class TileGeneration : MonoBehaviour
     [SerializeField]
     int seed;
     [SerializeField]
-    float3 mapOffset;
+    public float3 mapOffset;
     EntityManager entityManager;
     int entityCount;
 
     float[,] perlinNoseGeneration ;
     float[,] perlinNoseGenerationForTree;
     // Start is called before the first frame update
-    void Start()
+    public void StartGeneration()
     {   //Seed Generer aleatoirement 
         seed = UnityEngine.Random.Range(0, 300);
         noiseGenerator = new PerlinNoiseGenerator();
