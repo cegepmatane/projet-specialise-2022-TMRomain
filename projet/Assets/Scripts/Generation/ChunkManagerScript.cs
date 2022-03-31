@@ -105,7 +105,7 @@ public class ChunkManagerScript : MonoBehaviour
                     chunk.tileScript.tileRenderLogic();
                 }
                 if(asFindChunk == false){
-                    adjacentChunkList.Add(generateChunk(x,y));;
+                    adjacentChunkList.Add(generateChunk(x,y));
                 }
             } 
         }

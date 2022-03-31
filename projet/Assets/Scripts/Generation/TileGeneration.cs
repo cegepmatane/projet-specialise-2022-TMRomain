@@ -168,16 +168,24 @@ public class TileGeneration : MonoBehaviour
         }
     }
     public void tileRenderLogic(){
-        if(!isTileEnabled){
-            foreach (Entity entity in allTileEntities)
+         foreach (Entity entity in allTileEntities)
             {
-                entityManager.AddComponentData(entity,new Disabled{});
+                // Disabled disable = entityManager.GetComponentData<Disabled>(entity);
+                // entityManager.AddComponentData(entity,new Disabled{});
+                //LinkedEntityGroup a essayer
+                entityManager.SetEnabled(entity, isTileEnabled);
             }
-        }else{
-            foreach (Entity entity in allTileEntities)
-            {
-                entityManager.RemoveComponent(entity,typeof(Disabled));
-            }
-        }
+        // if(!isTileEnabled){
+        //     foreach (Entity entity in allTileEntities)
+        //     {
+        //         // Disabled disable = entityManager.GetComponentData<Disabled>(entity);
+        //         // entityManager.AddComponentData(entity,new Disabled{});
+        //     }
+        // }else{
+        //     foreach (Entity entity in allTileEntities)
+        //     {
+        //         // entityManager.RemoveComponent(entity,typeof(Disabled));
+        //     }
+        // }
     }
 }
