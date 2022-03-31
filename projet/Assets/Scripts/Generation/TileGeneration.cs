@@ -27,6 +27,8 @@ public class TileGeneration : MonoBehaviour
     Material[] planeMaterial;
     [SerializeField]
     int seed;
+    [SerializeField]
+    float3 mapOffset;
     EntityManager entityManager;
     int entityCount;
 
@@ -68,7 +70,7 @@ public class TileGeneration : MonoBehaviour
                     genererArbre = spawnArbre(matType,x,y);
                 }
 
-                CreateEntitie(position, rotation,randomMat,genererArbre);
+                CreateEntitie(position + mapOffset, rotation,randomMat,genererArbre);
                 entityCount++;
             }
         }
