@@ -18,17 +18,5 @@ public partial class entitiesLogic : MonoBehaviour
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
     }
-    public void disableEntityInChunk(Entity[] entities,EntityManager manager){
-        foreach (Entity entity in entities)
-        {
-            manager.SetEnabled(entity, false);
-        }
-    }
-    public void enableEntityInChunk(Entity[]  entities,EntityManager manager){
-
-        foreach (Entity entity in entities)
-        {
-            manager.SetEnabled(entity, true);
-        }
-    }
+    
 }

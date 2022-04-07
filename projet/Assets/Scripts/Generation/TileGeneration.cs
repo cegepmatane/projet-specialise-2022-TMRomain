@@ -43,12 +43,15 @@ public class TileGeneration : MonoBehaviour
     private List<Entity> allTileEntities = new List<Entity>();
     float[,] perlinNoseGeneration ;
     float[,] perlinNoseGenerationForTree;
-    Entity entityTile;
+    bool isBasePlaneCreated = false;
+    bool isBaseTreeCreated = false;
+    Entity baseTreeEntity;
+    Entity basePlaneEntity;
     // Start is called before the first frame update
-    // void Start(){
+    void Start(){
 
-    //     StartGeneration();
-    // }
+        StartGeneration(0);
+    }
     public void StartGeneration(int chunkGroup)
     {   
         chunkID=chunkGroup;
@@ -71,8 +74,6 @@ public class TileGeneration : MonoBehaviour
 
     void GenerateTerrain(){
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        entityTile = entityManager.CreateEntity();
-        entityManager.SetName(entityTile,"Tile " + chunkID);
         // entityManager.AddComponentData(entityTile,new WorldToLocal{});
         // entityManager.AddComponentData(entityTile,new RenderBounds{Value = new Bounds(Vector3.zero, Vector3.one * 2000).ToAABB()});
 
@@ -93,44 +94,22 @@ public class TileGeneration : MonoBehaviour
                 if(faireSpawnArbre){
                     genererArbre = spawnArbre(matType,x,y);
                 }
-
-                CreateEntitie(position + mapOffset, rotation,randomMat,genererArbre);
+                if(!isBasePlaneCreated){
+                    CreateEntitie(position + mapOffset, rotation,randomMat,genererArbre);
+                }else{
+                    cloneEntity(position,randomMat,rotation,genererArbre);
+                }
                 entityCount++;
             }
         }
         // tileRenderLogic();
     }
     void CreateEntitie(float3 position,quaternion rotation, Material planeColor,bool genererArbre){
-        Entity entity = entityManager.CreateEntity();
+        
         //Generation des arbres
-        if(genererArbre){
-
-            Transform arbreTransform = treePrefab.GetComponentsInChildren<Transform>()[0];
-            Entity entityArbre = entityManager.CreateEntity();
-            // entityManager.AddComponentData(entityArbre, new Parent { Value = entityTile });
-
-            
-            entityManager.SetName(entityArbre,"Arbre " + chunkID);
-            entityManager.AddComponentData(entityArbre,new Translation{Value = position});
-            entityManager.AddComponentData(entityArbre,new Rotation{Value= rotation});
-            entityManager.AddSharedComponentData(entityArbre,new RenderMesh{
-                        mesh = treeMesh,
-                        material = treeMaterial
-                    });
-            entityManager.AddComponentData(entityArbre, new RenderBounds { Value = treeMesh.bounds.ToAABB() });
-            // entityManager.AddComponentData(entityArbre, new WorldRenderBounds { Value = treeMesh.bounds.ToAABB() });
-
-
-            int randomScale = UnityEngine.Random.Range(15, 30);
-            float3 randomSize = new float3 (randomScale,randomScale,randomScale);
-            entityManager.AddSharedComponentData(entityArbre,new SharedGrouping{Group = chunkID});
-
-            entityManager.AddComponentData(entityArbre, new NonUniformScale { Value = randomSize});
-
-            //Rend l'objet relatif a la scene.
-            entityManager.AddComponentData(entityArbre,new LocalToWorld{});
-
-
+        if(genererArbre)
+        {
+            GenererArbre(position, rotation);
             //Ancien Systeme
             // //Generation de l'arbre 
             // GameObject arbre = Instantiate(treePrefab, new Vector3(position.x, position.y, position.z), Quaternion.identity);
@@ -139,6 +118,7 @@ public class TileGeneration : MonoBehaviour
             // Vector3 randomSize = new Vector3 (randomScale,randomScale,randomScale);
             // arbre.transform.localScale = randomSize;
         }
+        Entity entity = entityManager.CreateEntity();
         //Donne un nom a l'entiter generer
         entityManager.SetName(entity,"Case " + chunkID);
 
@@ -159,9 +139,56 @@ public class TileGeneration : MonoBehaviour
 
         //Rend l'objet relatif a la scene.
         entityManager.AddComponentData(entity,new LocalToWorld{});
+        basePlaneEntity = entity;
+        isBasePlaneCreated = true;
         // entityManager.AddComponentData(entity, new Unity.Transforms.Parent { Value = entityTile });
+    }
 
-        
+    private void GenererArbre(float3 position, quaternion rotation)
+    {
+        Transform arbreTransform = treePrefab.GetComponentsInChildren<Transform>()[0];
+        Entity entityArbre = entityManager.CreateEntity();
+        // entityManager.AddComponentData(entityArbre, new Parent { Value = entityTile });
+        entityManager.SetName(entityArbre, "Arbre " + chunkID);
+        entityManager.AddComponentData(entityArbre, new Translation { Value = position });
+        entityManager.AddComponentData(entityArbre, new Rotation { Value = rotation });
+        entityManager.AddSharedComponentData(entityArbre, new RenderMesh
+        {
+            mesh = treeMesh,
+            material = treeMaterial
+        });
+        entityManager.AddComponentData(entityArbre, new RenderBounds { Value = treeMesh.bounds.ToAABB() });
+        // entityManager.AddComponentData(entityArbre, new WorldRenderBounds { Value = treeMesh.bounds.ToAABB() });
+
+
+        int randomScale = UnityEngine.Random.Range(15, 30);
+        float3 randomSize = new float3(randomScale, randomScale, randomScale);
+        entityManager.AddSharedComponentData(entityArbre, new SharedGrouping { Group = chunkID });
+
+        entityManager.AddComponentData(entityArbre, new NonUniformScale { Value = randomSize });
+
+        //Rend l'objet relatif a la scene.
+        entityManager.AddComponentData(entityArbre, new LocalToWorld { });
+        baseTreeEntity= entityArbre;
+        isBaseTreeCreated = true;
+    }
+
+    void cloneEntity(float3 position,Material planeColor,quaternion rotation,bool genererArbre){
+        Entity clonePlane = entityManager.Instantiate(basePlaneEntity);
+        entityManager.SetComponentData<Translation>(clonePlane,new Translation{Value = position});
+        entityManager.SetSharedComponentData<RenderMesh>(clonePlane,new RenderMesh{
+            mesh = planeMesh,
+            material = planeColor});
+        if(genererArbre){
+            if(isBaseTreeCreated){
+                Entity cloneTree = entityManager.Instantiate(baseTreeEntity);
+                entityManager.SetComponentData<Translation>(cloneTree,new Translation{Value = position});
+            }else{
+            GenererArbre(position,rotation);
+            }
+
+        }
+
     }
     int RandomColor(int  x, int y){
         float positionNoise = perlinNoseGeneration[x,y];
