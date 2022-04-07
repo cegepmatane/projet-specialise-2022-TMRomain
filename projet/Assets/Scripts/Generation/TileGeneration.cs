@@ -48,10 +48,10 @@ public class TileGeneration : MonoBehaviour
     Entity baseTreeEntity;
     Entity basePlaneEntity;
     // Start is called before the first frame update
-    void Start(){
+    // void Start(){
 
-        StartGeneration(0);
-    }
+    //     StartGeneration(0);
+    // }
     public void StartGeneration(int chunkGroup)
     {   
         chunkID=chunkGroup;
