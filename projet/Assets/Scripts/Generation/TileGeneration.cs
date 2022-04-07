@@ -45,8 +45,8 @@ public class TileGeneration : MonoBehaviour
     float[,] perlinNoseGenerationForTree;
     bool isBasePlaneCreated = false;
     bool isBaseTreeCreated = false;
-    Entity baseTreeEntity;
-    Entity basePlaneEntity;
+    Entity baseTreeEntity = new Entity();
+    Entity basePlaneEntity = new Entity();
     // Start is called before the first frame update
     // void Start(){
 
@@ -97,7 +97,7 @@ public class TileGeneration : MonoBehaviour
                 if(!isBasePlaneCreated){
                     CreateEntitie(position + mapOffset, rotation,randomMat,genererArbre);
                 }else{
-                    cloneEntity(position,randomMat,rotation,genererArbre);
+                    cloneEntity(position+ mapOffset,randomMat,rotation,genererArbre);
                 }
                 entityCount++;
             }
