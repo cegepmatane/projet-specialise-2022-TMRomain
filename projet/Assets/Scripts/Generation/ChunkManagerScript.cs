@@ -6,11 +6,13 @@ using System;
 
 public class ChunkManagerScript : MonoBehaviour
 {
+    int currentChunkGenerated = 0;
     public class Chunk
     {
         public int XPosition;
         public int YPosition;
         public TileGeneration tileScript;
+        public bool isTileEnabled =false;
         public Chunk(int xPos, int yPos, TileGeneration script)
         {
             XPosition = xPos;
@@ -28,7 +30,7 @@ public class ChunkManagerScript : MonoBehaviour
 
     [SerializeField]
     int mapSize =3;
-    int numberOfChunkToLoad =2;
+    int numberOfChunkToLoad =5;
 
     [SerializeField]
     Transform playerTransform;
@@ -38,33 +40,33 @@ public class ChunkManagerScript : MonoBehaviour
     bool baseChunkGenerated = false;
 
     public void Start(){
-        GenerateBaseChunk();
+        // GenerateBaseChunk();
     }
     private void FixedUpdate() {
-        if(baseChunkGenerated){
-            playerToChunkConverter();
-        }
+        playerToChunkConverter();
     }
-    private void GenerateBaseChunk(){
-        for (int x = 0-mapSize; x < mapSize; x++)
-        {
-            int xAdd = x * (xTileSize*10);
-            for (int y = 0-mapSize; y < mapSize; y++)
-            {
-                int yAdd = y * (yTileSize*10);
-                  GameObject terrain = Instantiate(tileGeneratorPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-                  TileGeneration tile = terrain.GetComponent<TileGeneration>();
-                  float3 offset = new float3(xAdd,0,yAdd);
-                  //Logic des tiles
-                  tile.mapOffset = offset;
-                  tile.xSize = xTileSize;
-                  tile.ySize = yTileSize;
-                allChunk.Add(new Chunk(x,y,tile));
-                tile.StartGeneration();
-            }
-        }
-        baseChunkGenerated = true;    
-    }
+    // private void GenerateBaseChunk(){
+    //     for (int x = 0-mapSize; x < mapSize; x++)
+    //     {
+    //         int xAdd = x * (xTileSize*10);
+    //         for (int y = 0-mapSize; y < mapSize; y++)
+    //         {
+    //             int yAdd = y * (yTileSize*10);
+    //               GameObject terrain = Instantiate(tileGeneratorPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+    //               TileGeneration tile = terrain.GetComponent<TileGeneration>();
+    //               float3 offset = new float3(xAdd,0,yAdd);
+    //               //Logic des tiles
+    //               tile.mapOffset = offset;
+    //               tile.xSize = xTileSize;
+    //               tile.ySize = yTileSize;
+    //             allChunk.Add(new Chunk(x,y,tile));
+    //             tile.isTileEnabled =true;
+    //             tile.StartGeneration(currentChunkGenerated);
+    //             currentChunkGenerated++;
+    //         }
+    //     }
+    //     baseChunkGenerated = true;    
+    // }
 
     private void playerToChunkConverter(){
         int currentXChunk = (int)playerTransform.position.x / (xTileSize*10);
@@ -77,7 +79,6 @@ public class ChunkManagerScript : MonoBehaviour
     }
 
     private void UpdateCurrentChunk(){
-        Debug.Log("Update Chunk");
         //  foreach (Chunk chunk in allChunk)
         // {
         //    if(playerChunk.x == chunk.XPosition && playerChunk.y == chunk.YPosition ){
@@ -89,7 +90,8 @@ public class ChunkManagerScript : MonoBehaviour
     }
     private void UpdateAdjacentChunk(){
         List<Chunk> adjacentChunkList = new List<Chunk>();
-
+        List<Chunk> farChunkList = new List<Chunk>();
+        farChunkList = new List<Chunk>(allChunk);
         for (int x = (int)playerChunk.x-numberOfChunkToLoad; x < (int)playerChunk.x+numberOfChunkToLoad; x++)
         {
            for (int y = (int)playerChunk.y-numberOfChunkToLoad; y < (int)playerChunk.y+numberOfChunkToLoad; y++)
@@ -100,19 +102,32 @@ public class ChunkManagerScript : MonoBehaviour
                     if(x == chunk.XPosition && y == chunk.YPosition ){
                         asFindChunk=true;
                         adjacentChunkList.Add(chunk);
+                        farChunkList.Remove(chunk);
                     }
-                    chunk.tileScript.isTileEnabled = false;
-                    chunk.tileScript.tileRenderLogic();
                 }
                 if(asFindChunk == false){
-                    adjacentChunkList.Add(generateChunk(x,y));
+                    Chunk generatedChunk = generateChunk(x,y);
+                    adjacentChunkList.Add(generatedChunk);
                 }
             } 
         }
         foreach (Chunk adjacentChunk in adjacentChunkList)
         {
-            adjacentChunk.tileScript.isTileEnabled = true;
-            adjacentChunk.tileScript.tileRenderLogic();
+            if(adjacentChunk.isTileEnabled == false){
+                adjacentChunk.isTileEnabled =  true;
+                adjacentChunk.tileScript.EnableTile();
+                // adjacentChunk.tileScript.isTileEnabled = true;
+                // adjacentChunk.tileScript.tileRenderLogic();
+            }
+        }
+         foreach (Chunk farChunk in farChunkList)
+        {
+            if(farChunk.isTileEnabled == true){
+                farChunk.isTileEnabled = false;
+                farChunk.tileScript.DisableTile();
+                // adjacentChunk.tileScript.isTileEnabled = true;
+                // adjacentChunk.tileScript.tileRenderLogic();
+            }
         }
 
     }
@@ -129,8 +144,12 @@ public class ChunkManagerScript : MonoBehaviour
         tile.xSize = xTileSize;
         tile.ySize = yTileSize;
         Chunk generatedChunk = new Chunk(x,y,tile);
+        generatedChunk.isTileEnabled = true;
         allChunk.Add(generatedChunk);
-        tile.StartGeneration();
+        // allChunk.Add(new Chunk(x,y,tile));
+        tile.chunkID =currentChunkGenerated;
+        currentChunkGenerated++;
+        tile.StartGeneration(currentChunkGenerated);
         return generatedChunk;
     }
 

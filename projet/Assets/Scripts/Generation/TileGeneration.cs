@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using Unity.Rendering;
 using Unity.Mathematics;
-
+struct SharedGrouping : ISharedComponentData
+{
+    public int Group;
+}
 public class TileGeneration : MonoBehaviour
 {
     [SerializeField]
@@ -34,17 +38,20 @@ public class TileGeneration : MonoBehaviour
     public float3 mapOffset;
     EntityManager entityManager;
     int entityCount;
+    public int chunkID;
     public bool isTileEnabled = false;
     private List<Entity> allTileEntities = new List<Entity>();
     float[,] perlinNoseGeneration ;
     float[,] perlinNoseGenerationForTree;
+    Entity entityTile;
     // Start is called before the first frame update
     // void Start(){
 
     //     StartGeneration();
     // }
-    public void StartGeneration()
+    public void StartGeneration(int chunkGroup)
     {   
+        chunkID=chunkGroup;
         //Recupere les valeur pour la generation des entiter arbre 
         Transform arbreTransform = treePrefab.GetComponentsInChildren<Transform>()[1];
         treeMesh = arbreTransform.GetComponent<MeshFilter>().sharedMesh;
@@ -64,6 +71,10 @@ public class TileGeneration : MonoBehaviour
 
     void GenerateTerrain(){
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        entityTile = entityManager.CreateEntity();
+        entityManager.SetName(entityTile,"Tile " + chunkID);
+        // entityManager.AddComponentData(entityTile,new WorldToLocal{});
+        // entityManager.AddComponentData(entityTile,new RenderBounds{Value = new Bounds(Vector3.zero, Vector3.one * 2000).ToAABB()});
 
         for (int x = 0; x < xSize;x++)
         {
@@ -87,7 +98,7 @@ public class TileGeneration : MonoBehaviour
                 entityCount++;
             }
         }
-        tileRenderLogic();
+        // tileRenderLogic();
     }
     void CreateEntitie(float3 position,quaternion rotation, Material planeColor,bool genererArbre){
         Entity entity = entityManager.CreateEntity();
@@ -96,7 +107,10 @@ public class TileGeneration : MonoBehaviour
 
             Transform arbreTransform = treePrefab.GetComponentsInChildren<Transform>()[0];
             Entity entityArbre = entityManager.CreateEntity();
-            entityManager.SetName(entityArbre,"Arbre " + entityCount);
+            // entityManager.AddComponentData(entityArbre, new Parent { Value = entityTile });
+
+            
+            entityManager.SetName(entityArbre,"Arbre " + chunkID);
             entityManager.AddComponentData(entityArbre,new Translation{Value = position});
             entityManager.AddComponentData(entityArbre,new Rotation{Value= rotation});
             entityManager.AddSharedComponentData(entityArbre,new RenderMesh{
@@ -104,13 +118,14 @@ public class TileGeneration : MonoBehaviour
                         material = treeMaterial
                     });
             entityManager.AddComponentData(entityArbre, new RenderBounds { Value = treeMesh.bounds.ToAABB() });
-            allTileEntities.Add(entityArbre);
-
+            // entityManager.AddComponentData(entityArbre, new WorldRenderBounds { Value = treeMesh.bounds.ToAABB() });
 
 
             int randomScale = UnityEngine.Random.Range(15, 30);
             float3 randomSize = new float3 (randomScale,randomScale,randomScale);
-            entityManager.AddComponentData(entityArbre, new NonUniformScale { Value =randomSize});
+            entityManager.AddSharedComponentData(entityArbre,new SharedGrouping{Group = chunkID});
+
+            entityManager.AddComponentData(entityArbre, new NonUniformScale { Value = randomSize});
 
             //Rend l'objet relatif a la scene.
             entityManager.AddComponentData(entityArbre,new LocalToWorld{});
@@ -125,13 +140,15 @@ public class TileGeneration : MonoBehaviour
             // arbre.transform.localScale = randomSize;
         }
         //Donne un nom a l'entiter generer
-        entityManager.SetName(entity,"Case " + entityCount);
+        entityManager.SetName(entity,"Case " + chunkID);
 
         //Change la position de l'entité
         entityManager.AddComponentData(entity,new Translation{Value = position});
 
         //Change la rotation de l'objet
         entityManager.AddComponentData(entity,new Rotation{Value= rotation});
+
+        entityManager.AddSharedComponentData(entity,new SharedGrouping{Group = chunkID});
 
         //Ajout du visuel a l'entité
         entityManager.AddSharedComponentData(entity,new RenderMesh{
@@ -142,7 +159,8 @@ public class TileGeneration : MonoBehaviour
 
         //Rend l'objet relatif a la scene.
         entityManager.AddComponentData(entity,new LocalToWorld{});
-        allTileEntities.Add(entity);
+        // entityManager.AddComponentData(entity, new Unity.Transforms.Parent { Value = entityTile });
+
         
     }
     int RandomColor(int  x, int y){
@@ -167,14 +185,59 @@ public class TileGeneration : MonoBehaviour
             return false;
         }
     }
-    public void tileRenderLogic(){
-         foreach (Entity entity in allTileEntities)
-            {
-                // Disabled disable = entityManager.GetComponentData<Disabled>(entity);
-                // entityManager.AddComponentData(entity,new Disabled{});
-                //LinkedEntityGroup a essayer
-                entityManager.SetEnabled(entity, isTileEnabled);
-            }
+
+    public void DisableTile(){
+        // entityManager.SetEnabled(entityTile,false);
+        var m_Query = entityManager.CreateEntityQuery(typeof(SharedGrouping));
+        m_Query.SetSharedComponentFilter(new SharedGrouping { Group = chunkID });
+        entityManager.AddComponent<Disabled>(m_Query);
+        Debug.Log("Disabling Tile : " + chunkID);
+
+    }
+    public void EnableTile(){
+        Debug.Log("Enabling Tile : " + chunkID);
+        var m_Query = entityManager.CreateEntityQuery(typeof(Disabled),typeof(SharedGrouping));
+        m_Query.SetSharedComponentFilter(new SharedGrouping { Group = chunkID });
+        entityManager.RemoveComponent<Disabled>(m_Query);
+        // entityManager.SetEnabled(entityTile,true);
+    }
+    // public void tileRenderLogic(){
+    //     var m_Query = entityManager.CreateEntityQuery(typeof(SharedGrouping));
+    //     m_Query.SetSharedComponentFilter(new SharedGrouping { Group = chunkID });
+    //     if(!isTileEnabled){
+    //         NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob) ;
+    //         Entity[] realEntities = entities.ToArray();
+    //         entities.Dispose();
+    //         entitiesLogic.instance.disableEntityInChunk(realEntities,entityManager);
+    //     }else{
+    //         NativeArray<Entity> entitiesEnable = m_Query.ToEntityArray(Allocator.TempJob) ;
+    //         Entity[] realEntitiesEnabled = entitiesEnable.ToArray();
+    //         entitiesEnable.Dispose();
+    //         entitiesLogic.instance.enableEntityInChunk(realEntitiesEnabled,entityManager);
+    //     }
+
+
+        // var m_Query = entityManager.CreateEntityQuery(typeof(SharedGrouping));
+        // m_Query.SetSharedComponentFilter(new SharedGrouping { Group = chunkID });
+        // NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob) ;
+        // Entity[] realEntities = entities.ToArray();
+        // entities.Dispose();
+
+        // if(!isTileEnabled){
+        //     // Debug.Log(realEntities.Length);
+        //     manager.disableEntityInChunk(realEntities,entityManager);
+        // }else{
+        //     manager.enableEntityInChunk(realEntities,entityManager);
+        // }
+        // entities.Dispose();
+        //  manager.changeEntityValue(m_Query,entityManager,isTileEnabled);
+        //  foreach (Entity entity in allTileEntities)
+        //     {
+        //         // Disabled disable = entityManager.GetComponentData<Disabled>(entity);
+        //         // entityManager.AddComponentData(entity,new Disabled{});
+        //         //LinkedEntityGroup a essayer
+        //         entityManager.SetEnabled(entity, isTileEnabled);
+        //     }
         // if(!isTileEnabled){
         //     foreach (Entity entity in allTileEntities)
         //     {
@@ -187,5 +250,4 @@ public class TileGeneration : MonoBehaviour
         //         // entityManager.RemoveComponent(entity,typeof(Disabled));
         //     }
         // }
-    }
 }

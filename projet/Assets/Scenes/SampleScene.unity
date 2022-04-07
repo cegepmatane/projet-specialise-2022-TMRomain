@@ -210,8 +210,9 @@ GameObject:
   m_Component:
   - component: {fileID: 255097904}
   - component: {fileID: 255097903}
+  - component: {fileID: 255097905}
   m_Layer: 0
-  m_Name: ChunkGeneration
+  m_Name: MapManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -230,9 +231,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileGeneratorPrefab: {fileID: 3710277248302514427, guid: 978bec0db275ded45a085902a8c304be, type: 3}
-  xTileSize: 50
-  yTileSize: 50
-  mapSize: 3
+  xTileSize: 20
+  yTileSize: 20
+  mapSize: 5
   playerTransform: {fileID: 1600507033}
 --- !u!4 &255097904
 Transform:
@@ -248,6 +249,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &255097905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255097902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e316af40e23470748ba5abbcd4497ab5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &345994503
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1166,11 +1179,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3710277248302514426, guid: 978bec0db275ded45a085902a8c304be, type: 3}
       propertyPath: xSize
-      value: 500
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3710277248302514426, guid: 978bec0db275ded45a085902a8c304be, type: 3}
       propertyPath: ySize
-      value: 500
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3710277248302514427, guid: 978bec0db275ded45a085902a8c304be, type: 3}
       propertyPath: m_Name
