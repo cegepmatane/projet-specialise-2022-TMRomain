@@ -28,9 +28,10 @@ public class ChunkManagerScript : MonoBehaviour
     [SerializeField]
     int yTileSize;
 
-    [SerializeField]
+    // [SerializeField]
     int mapSize =3;
-    int numberOfChunkToLoad =5;
+    [SerializeField]
+    int numberOfChunkToLoad =2;
 
     [SerializeField]
     Transform playerTransform;
