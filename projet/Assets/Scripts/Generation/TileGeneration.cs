@@ -228,6 +228,10 @@ public class TileGeneration : MonoBehaviour
         entityManager.RemoveComponent<Disabled>(m_Query);
         // entityManager.SetEnabled(entityTile,true);
     }
+
+
+
+    
     // public void tileRenderLogic(){
     //     var m_Query = entityManager.CreateEntityQuery(typeof(SharedGrouping));
     //     m_Query.SetSharedComponentFilter(new SharedGrouping { Group = chunkID });

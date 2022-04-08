@@ -22,6 +22,7 @@ public class ChunkManagerScript : MonoBehaviour
         
     }
     [SerializeField]
+    GameObject[] biomes;
     GameObject tileGeneratorPrefab;
     [SerializeField]
     int xTileSize;
@@ -39,7 +40,14 @@ public class ChunkManagerScript : MonoBehaviour
     private List<Chunk> allChunk = new List<Chunk>();
     
     bool baseChunkGenerated = false;
-
+    PerlinNoiseGenerator noiseGenerator;
+    float[,] perlinNoseGeneration;
+    public void Awake(){
+        noiseGenerator = GetComponent<PerlinNoiseGenerator>();
+        noiseGenerator.pixWidth = 200;
+        noiseGenerator.pixHeight = 200;
+        perlinNoseGeneration = noiseGenerator.CalcNoise(0);
+    }
     public void Start(){
         // GenerateBaseChunk();
     }
@@ -137,7 +145,7 @@ public class ChunkManagerScript : MonoBehaviour
     {
         int xAdd = x * (yTileSize*10);
         int yAdd = y * (yTileSize*10);
-        GameObject terrain = Instantiate(tileGeneratorPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        GameObject terrain = Instantiate(chunkGenerator(x,y), new Vector3(0, 0, 0), Quaternion.identity);
         TileGeneration tile = terrain.GetComponent<TileGeneration>();
         float3 offset = new float3(xAdd,0,yAdd);
         //Logic des tiles
@@ -155,12 +163,6 @@ public class ChunkManagerScript : MonoBehaviour
     }
 
 
-
-
-
-
-
-
     bool estDansMarge(float valeur,float valeurSouhaiter,float marge){
         // Debug.Log(valeur);
         // Debug.Log(valeurSouhaiter+marge );
@@ -172,5 +174,16 @@ public class ChunkManagerScript : MonoBehaviour
         }
         return false;
     }
-
+    GameObject chunkGenerator(int  x, int y){
+        float positionNoise = perlinNoseGeneration[Mathf.Abs(x),Mathf.Abs(y)];
+        // Debug.Log(Mathf.Abs(x));
+        // Debug.Log(Mathf.Abs(y));
+        if(positionNoise< 0.3){
+            return biomes[0];
+        }else if(positionNoise< 0.34){
+            return biomes[1];
+        }else{
+            return biomes[2];
+        }
+    }
 }
