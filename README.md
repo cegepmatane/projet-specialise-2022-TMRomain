@@ -1,8 +1,6 @@
 # Projet DOTS Unity
 <h1> Preview : </h1>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/eMw0p68J-gs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-Lien vers la video: https://www.youtube.com/watch?v=eMw0p68J-gs
+Video Preview: https://www.youtube.com/watch?v=eMw0p68J-gs
 <h2> Biome Foret:</h2>
 
 ![](https://github.com/cegepmatane/projet-specialise-2022-TMRomain/blob/main/doc/ExempleForet.png?raw=true)
